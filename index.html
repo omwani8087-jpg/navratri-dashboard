@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Navratri Cultural Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family:"Hind",sans-serif;
+            margin: 0;
+            background-color: #f3eeeeec;
+            color: #333;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle, #ffebcd 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: backgroundGlow 15s infinite linear;
+        }
+        header {
+            background: linear-gradient(to right, #ff4e50, #f9d423);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 4rem;
+            letter-spacing: 1.5px;
+            animation: fadeInDown 1s ease forwards;
+            opacity: 0;
+            text-shadow: 2px 2px 4px rgba(240, 240, 232, 0.3);
+        }
+        header p {
+            font-size: 2rem;
+            margin-top: 10px;
+            font-weight: 500;
+            animation: fadeInUp 1.2s ease forwards, pulse 2s infinite;
+            opacity: 0;
+        }
+
+        /* Navratri Daily Color Bar Timeline */
+        .color-timeline {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .color-day {
+            flex: 1;
+            padding: 15px 5px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 0 4px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        .color-day:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            filter: brightness(1.2);
+            z-index: 10;
+            border: 2px solid #fff;
+        }
+        .color-day::after {
+            content: "Click to see details";
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            font-size: 50px;
+            color: #444;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .color-day:hover::after {
+            opacity: 1;
+        }
+        .color-day:hover::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: inherit;
+            border-radius: 8px;
+            filter: blur(8px);
+            opacity: 0.8;
+            z-index: -1;
+        }
+        /* Colors matching traditional Navratri */
+        .day1 { background: #FFD700; } /* Yellow */
+        .day2 { background: #228B22; } /* Green */
+        .day3 { background: #FF4500; } /* Orange-Red */
+        .day4 { background: #800080; } /* Purple */
+        .day5 { background: #FF1493; } /* Deep Pink */
+        .day6 { background: #008080; } /* Teal */
+        .day7 { background: #DC143C; } /* Crimson */
+        .day8 { background: #FF8C00; } /* Dark Orange */
+        .day9 { background: #FF6347; } /* Tomato */
+
+        section {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h2 {
+            color: #df4119;
+            border-bottom: 3px solid #bb2a2a;
+            padding-bottom: 8px;
+            font-size: 3rem;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.37);
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+        .card {
+            flex: 1 1 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+            padding: 25px;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease, border 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        .card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+            border: 2px solid #e74c3c;
+        }
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.5s ease;
+        }
+        .card:hover img {
+            transform: scale(1.05);
+        }
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            background: #f0e5d8;
+            font-size: 14px;
+            color: #555;
+            margin-top: 60px;
+            border-top: 2px solid #e74c3c;
+        }
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        @keyframes backgroundGlow {
+            0% { background-position: 0 0; }
+            100% { background-position: 500px 500px; }
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.747);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: relative;
+            background: linear-gradient(to bottom, #fff9f0, #fff);
+            margin: 10% auto;
+            padding: 30px;
+            border: 2px solid #d14536;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.5s ease;
+            text-align: center;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            text-align: center;
+            width: 100%;
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #e74c3c;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.2);
+            color: #c0392b;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .devi-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .devi-title {
+            font-size: 1.5rem;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            color: #d84315;
+        }
+
+        .devi-significance {
+            line-height: 1.6;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 15% auto;
+                padding: 20px;
+            }
+
+            .devi-image {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Navratri: A Celebration of Indian Culture</h1>
+        <p>Explore the colors, rituals, food, and dances of Navratri</p>
+    </header>
+
+    <div class="color-timeline" aria-label="Navratri daily colors and significance">
+        <div class="color-day day1" title="Day 1: Shailaputri (Yellow)" onclick="openDeviModal(1)">Day 1</div>
+        <div class="color-day day2" title="Day 2: Brahmacharini (Green)" onclick="openDeviModal(2)">Day 2</div>
+        <div class="color-day day3" title="Day 3: Chandraghanta (Orange-Red)" onclick="openDeviModal(3)">Day 3</div>
+        <div class="color-day day4" title="Day 4: Kushmanda (Purple)" onclick="openDeviModal(4)">Day 4</div>
+        <div class="color-day day5" title="Day 5: Skandamata (Deep Pink)" onclick="openDeviModal(5)">Day 5</div>
+        <div class="color-day day6" title="Day 6: Katyayani (Teal)" onclick="openDeviModal(6)">Day 6</div>
+        <div class="color-day day7" title="Day 7: Kalaratri (Crimson)" onclick="openDeviModal(7)">Day 7</div>
+        <div class="color-day day8" title="Day 8: Mahagauri (Dark Orange)" onclick="openDeviModal(8)">Day 8</div>
+        <div class="color-day day9" title="Day 9: Siddhidatri (Tomato)" onclick="openDeviModal(9)">Day 9</div>
+    </div>
+
+    <section>
+        <h2>🌼 Significance</h2>
+        <p>Navratri, literally meaning "nine nights," is a vibrant Hindu festival celebrating the divine feminine energy — Goddess Durga and her nine forms. It symbolizes the triumph of good over evil, marking Goddess Durga's victory over the demon Mahishasura. Each day honors a different form of Durga, with unique colors, rituals, and prayers. The festival culminates on Vijayadashami (Dussehra), symbolizing renewal and victory.</p>
+    </section>
+
+    <section>
+        <h2>🎨 Rituals & Daily Colors</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="Maashailpuri.jpg" alt="Shailaputri">
+                <h3>Day 1: Shailaputri (Yellow)</h3>
+                <p>Known as 'Daughter of the Mountain,' Shailaputri is worshipped with yellow flowers and turmeric-based offerings. The color yellow represents happiness, brightness, and new beginnings.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.indiatoday.in/information/story/navaratri-day-2-worship-of-maa-brahmacharini-and-its-significance-2005355-2022-09-27" alt="Brahmacharini">
+                <h3>Day 2: Brahmacharini (Green)</h3>
+                <p>Symbolizing austerity and devotion, Brahmacharini’s day is dedicated to meditation and fasting. Green, the color of harmony and nature, is worn by devotees to invoke peace.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.behance.net/search/projects/chandraghanta" alt="Chandraghanta">
+                <h3>Day 3: Chandraghanta (Orange-Red)</h3>
+                <p>The fierce form of the Goddess, Chandraghanta bestows courage. Orange-red represents bravery and strength. People light diyas and perform evening aarti with fervor.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.mypandit.com/festivals/maa-kushmanda/?srsltid=AfmBOooaT-UYekgADEwHqGkqIoJIGKnmkpeUASqewraa6rP4e4y4PcYS" alt="Kushmanda">
+                <h3>Day 4: Kushmanda (Purple)</h3>
+                <p>Kushmanda is believed to have created the universe with her divine smile. Purple, the color of mysticism, adorns the day’s festivities, promoting spiritual growth.</p>
+            </div>
+            <div class="card">
+                <img src="https://www.facebook.com/SanatanaDharmaSena/posts/navratri-day-5-skandamataskandmata-mata-is-worshipped-on-the-fifth-day-of-navrat/3322700344446480/" alt="Skandamata">
+                <h3>Day 5: Skandamata (Deep Pink)</h3>
+                <p>Mother of Lord Kartikeya, Skandamata symbolizes nurturing love. The deep pink color signifies compassion and affection, inspiring devotees to offer prayers for family wellbeing.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1629983935294-f254924a35b1?auto=format&fit=crop&w=800&q=80" alt="Katyayani">
+                <h3>Day 6: Katyayani (Teal)</h3>
+                <p>Worshipped as the warrior goddess, Katyayani’s day is marked by prayers for strength and protection. Teal represents balance and emotional healing.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1629983935294-f254924a35b1?auto=format&fit=crop&w=800&q=80" alt="Kalaratri">
+                <h3>Day 7: Kalaratri (Crimson)</h3>
+                <p>The dark fierce form, Kalaratri destroys negativity. Crimson, symbolizing power and intensity, is worn to honor her mighty presence.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1629983935294-f254924a35b1?auto=format&fit=crop&w=800&q=80" alt="Mahagauri">
+                <h3>Day 8: Mahagauri (Dark Orange)</h3>
+                <p>Mahagauri signifies purity and serenity. Dark orange color reflects warmth and spirituality, encouraging devotees to seek inner peace.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1629983935294-f254924a35b1?auto=format&fit=crop&w=800&q=80" alt="Siddhidatri">
+                <h3>Day 9: Siddhidatri (Tomato)</h3>
+                <p>The giver of supernatural powers, Siddhidatri’s blessings mark the festival's completion. Tomato red is worn to celebrate success, knowledge, and achievement.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>📍 Regional Variations</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1607764693526-5f9c230a7e6b?auto=format&fit=crop&w=800&q=80" alt="Garba Dance in Gujarat">
+                <h3>Gujarat</h3>
+                <p>Gujarat is famous for its Garba and Dandiya Raas dances, where people dress in vibrant traditional attire and dance around a lit lamp symbolizing Goddess Durga. Special fasting foods like Sabudana Khichdi and Rajgira roti are prepared.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1516156008625-9a9ffb8cdb02?auto=format&fit=crop&w=800&q=80" alt="Durga Puja in West Bengal">
+                <h3>West Bengal</h3>
+                <p>Durga Puja is a grand event here, with elaborate clay idols, thematic pandals, cultural programs, and community feasts known as Bhog. The festival blends devotion, artistry, and social gathering.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1584433144859-ea4d0e239c5f?auto=format&fit=crop&w=800&q=80" alt="Navratri in South India">
+                <h3>South India</h3>
+                <p>Known as 'Golu' or 'Bommai Kolu,' homes display elaborate doll arrangements on tiered steps. Women dress in colorful sarees and worship Goddess Durga with floral decorations and sweets.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1573496779622-b1f9e23e77c0?auto=format&fit=crop&w=800&q=80" alt="Navratri in Maharashtra">
+                <h3>Maharashtra</h3>
+                <p>Famous for fasting rituals, devotional songs, and community Garba dances. The festival also marks the preparation of traditional food items and social festivities.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>💃 Music & Dance Forms</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Garba</h3>
+                <p>Originating from Gujarat, Garba is a circular dance around an earthen lamp or image of the Goddess. It celebrates life and fertility with graceful, rhythmic steps.</p>
+            </div>
+            <div class="card">
+                <h3>Dandiya Raas</h3>
+                <p>This energetic folk dance uses decorated sticks ('dandiya') to create rhythmic beats. Performed in pairs or groups, it symbolizes the mock fight between Goddess Durga and the demon Mahishasura.</p>
+            </div>
+            <div class="card">
+                <h3>Chhau Dance</h3>
+                <p>A traditional martial dance from Eastern India, especially Odisha, blending storytelling, combat, and religious themes, often performed during Navratri celebrations.</p>
+            </div>
+            <div class="card">
+                <h3>Bhajan & Kirtan</h3>
+                <p>Devotional songs praising Goddess Durga are sung in groups, enhancing the spiritual ambiance during the festival.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>🍛 Fasting & Festive Foods</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Sabudana Khichdi</h3>
+                <p>Made with sago pearls, peanuts, green chilies, and spices, this dish is light and nutritious, perfect for fasting days.</p>
+            </div>
+            <div class="card">
+                <h3>Singhara Halwa</h3>
+                <p>A sweet pudding made from water chestnut flour, ghee, and sugar, enjoyed especially on fasting days.</p>
+            </div>
+            <div class="card">
+                <h3>Kuttu ki Puri</h3>
+                <p>Deep-fried flatbreads made from buckwheat flour, a staple during fasts in many regions.</p>
+            </div>
+            <div class="card">
+                <h3>Fruit Chaat & Dry Fruits</h3>
+                <p>Refreshing mix of seasonal fruits and nutrient-rich dry fruits, often consumed to maintain energy during Navratri fasts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Component -->
+    <div id="deviModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 id="modal-day-title"></h2>
+            </div>
+            <div class="modal-body">
+                <img id="devi-image" src="" alt="" class="devi-image">
+                <h3 id="devi-name" class="devi-title"></h3>
+                <p id="devi-significance" class="devi-significance"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 INDIAN CULTURE AND TRADITIONS DURING NAVRATRI , Dashboard By OM WANI.
+    </footer>
+
+    <script>
+        // Data for each Navratri day's Devi
+        const deviData = [
+            {
+                day: 1,
+                name: "Maa Shailaputri",
+                color: "Yellow",
+                image: "C:/NAVRATRI/shailaputri.jpg",
+                significance: "Known as the daughter of the mountains, Maa Shailaputri represents the power of Brahma, Vishnu, and Shiva. She symbolizes nature, purity, and innocence. Devotees worship her for courage and wisdom. Yellow represents joy and new beginnings, embodying her pure and pristine form as the absolute form of Mother Nature."
+            },
+            {
+                day: 2,
+                name: "Maa Brahmacharini",
+                color: "Green",
+                image: "C:/NAVRATRI/brahmacharini.jpg",
+                significance: "Maa Brahmacharini embodies penance and austerity. She blesses devotees with peace, happiness, and prosperity. Green symbolizes growth, harmony, and fertility, reflecting her connection to nature and spiritual growth through meditation and disciplined practices."
+            },
+            {
+                day: 3,
+                name: "Maa Chandraghanta",
+                color: "Orange-Red",
+                image: "C:/NAVRATRI/chandraghanta.jpg",
+                significance: "Maa Chandraghanta, with a half-moon shaped like a bell on her forehead, represents bravery and courage. She fights evil forces and protects her devotees. Orange-Red signifies energy, strength, and determination, reflecting her fierce yet compassionate nature in battling negative forces."
+            },
+            {
+                day: 4,
+                name: "Maa Kushmanda",
+                color: "Purple",
+                image: "C:/NAVRATRI/kusghmanda.jpg",
+                significance: "Believed to have created the universe with her divine smile, Maa Kushmanda is the source of cosmic energy. She represents the healing power and the improvement of health. Purple represents mysticism and spirituality, signifying her cosmic knowledge and divine powers."
+            },
+            {
+                day: 5,
+                name: "Maa Skandamata",
+                color: "Deep Pink",
+                image: "C:/NAVRATRI/skandamata.jpg",
+                significance: "The mother of Skanda (Lord Kartikeya), Maa Skandamata symbolizes motherly love and care. She bestows wisdom and salvation to her devotees. Deep Pink represents nurturing love, care, and compassion, embodying her role as the divine mother who protects her children."
+            },
+            {
+                day: 6,
+                name: "Maa Katyayani",
+                color: "Teal",
+                image: "C:/NAVRATRI/katyayani.jpg",
+                significance: "Born to sage Katyayana, Maa Katyayani is the warrior form of Goddess Durga who slayed the demon Mahishasura. She represents immense courage and is worshipped for removing obstacles. Teal represents balance and emotional healing, reflecting her harmonizing presence between spiritual strength and worldly desires."
+            },
+            {
+                day: 7,
+                name: "Maa Kalaratri",
+                color: "Crimson",
+                image: "C:/NAVRATRI/kalaratri.jpg",
+                significance: "The fiercest form of Goddess Durga, Maa Kalaratri destroys evil and ignorance. She removes darkness (ignorance) from the world. Despite her fearsome appearance, she blesses devotees with auspicious results. Crimson represents power and protection, symbolizing her role as the destroyer of evil forces."
+            },
+            {
+                day: 8,
+                name: "Maa Mahagauri",
+                color: "Dark Orange",
+                image: "C:/NAVRATRI/mahagauri.jpg",
+                significance: "Extremely beautiful and fair, Maa Mahagauri symbolizes purity, serenity, and tranquility. She cleanses devotees of their sins and leads them on the path of virtue. Dark Orange represents optimism and positive energy, reflecting her purifying nature that transforms darkness into light."
+            },
+            {
+                day: 9,
+                name: "Maa Siddhidatri",
+                color: "Tomato",
+                image: "C:/NAVRATRI/siddhidatri.jpg",
+                significance: "The giver of supernatural powers (Siddhis), Maa Siddhidatri bestows wisdom and guides souls toward the supreme knowledge. She represents perfection and fulfillment. Tomato red signifies celebration, achievement, and the successful culmination of spiritual practices during Navratri."
+            }
+        ];
+
+        function revealSections() {
+            const sections = document.querySelectorAll('section');
+            const triggerBottom = window.innerHeight * 0.85;
+
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < triggerBottom) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+
+        const modal = document.getElementById("deviModal");
+        const closeBtn = document.getElementsByClassName("close-modal")[0];
+
+        function openDeviModal(dayNumber) {
+            const devi = deviData[dayNumber - 1];
+
+            document.getElementById("modal-day-title").textContent = `Day ${devi.day}: ${devi.color}`;
+            document.getElementById("devi-name").textContent = devi.name;
+            document.getElementById("devi-significance").textContent = devi.significance;
+
+            const deviImage = document.getElementById("devi-image");
+            deviImage.src = devi.image;
+            deviImage.alt = devi.name;
+
+            const colorElement = document.querySelector(`.day${dayNumber}`);
+            const computedColor = getComputedStyle(colorElement).backgroundColor;
+
+            deviImage.style.borderColor = computedColor;
+            document.querySelector(".modal-header").style.borderColor = computedColor;
+
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        closeBtn.onclick = closeModal;
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && modal.style.display === "block") {
+                closeModal();
+            }
+        });
+
+        window.addEventListener('scroll', revealSections);
+        window.addEventListener('load', revealSections);
+    </script>
+
+</body>
+</html>
